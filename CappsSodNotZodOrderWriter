@@ -1,0 +1,308 @@
+//AUTHOR: Yana Capps
+//COURSE: CPT 187
+//PURPOSE: Order writer program will write orders to a new file.     
+//STARTDATE: 07/15/2020
+
+package capps.cpt187.program6;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Random;
+import java.util.Scanner;
+
+public class Inventory 
+{// Open the brace of Inventory class
+
+	// Declare and initialize constants of supportive class
+	private String[] DISCOUNT_NAMES = {"Member", "Senior", "No Discount"};
+	private double[] DISCOUNT_RATES = {0.25, 0.15, 0.0};
+	private String[] PRIZE_NAMES = {"Hammer", "Jigsaw", "20 dollars gift card"};
+	private int MAX_RECORDS = 15;
+	private int NOT_FOUND = -1;
+	private int RESET_VALUE = 0;
+
+	// Declare and initialize variables
+	private int[] itemIDs = new int[MAX_RECORDS];
+	private String[] itemNames = new String[MAX_RECORDS];
+	private double[] itemPrices = new double[MAX_RECORDS];
+	private  int[] orderQuantity = new int[MAX_RECORDS];
+	private double[] orderTotal = new double[MAX_RECORDS];
+	private int[] inStockCounts = new int[MAX_RECORDS];
+	private int itemSearchIndex = 0;
+	private int recordCount = 0;
+	private Random prizeGenerator = new Random();
+
+	//Constructor
+	public Inventory()
+	{// Open the brace of constructor	
+	}// End of the brace of constructor
+
+	//Set method
+	public void setReduceStock(int borrowedHowMany)
+	{// Open the brace of the method
+		inStockCounts[itemSearchIndex] = inStockCounts[itemSearchIndex] - borrowedHowMany;
+	}// close method
+
+	// Set method
+	public void setLoadItems(String borrowedFileName)
+	{// Open the brace of the method
+		//Reset value every time when method id invoked
+		recordCount = RESET_VALUE;
+
+		// Try to open the file
+		try
+		{// Open the brace of try
+			Scanner infile = new Scanner (new FileInputStream(borrowedFileName));
+
+			while (infile.hasNext() == true && recordCount < MAX_RECORDS)
+			{// Open the brace of while 
+				itemIDs[recordCount] = infile.nextInt();
+				itemNames[recordCount] = infile.next();
+				itemPrices[recordCount] = infile.nextDouble();
+				inStockCounts[recordCount] = infile.nextInt();
+
+				recordCount++;
+
+			}// End of while
+			infile.close();
+			//Bubble Sort
+			setBubbleSort();
+		}// End of try 
+
+		//catch clause
+		catch (IOException ex)
+		{// Open the brace of catch
+			recordCount = NOT_FOUND;
+		}// End of catch
+	}// End of the method
+
+	// Set method
+	public void setLoadItems(String borrowedFileName, int borrowedSize)
+	{// Open the brace of the method
+		//Reset value every time when method id invoked
+		recordCount = RESET_VALUE;
+
+		// Try to open the file
+		try
+		{// Open the brace of try
+			Scanner infile = new Scanner (new FileInputStream(borrowedFileName));
+			while (infile.hasNext() == true && recordCount < borrowedSize)
+			{// Open the brace of while 
+				itemIDs[recordCount] = infile.nextInt();
+				itemNames[recordCount] = infile.next();
+				itemPrices[recordCount] = infile.nextDouble();
+				orderQuantity[recordCount] = infile.nextInt();
+				orderTotal[recordCount] = infile.nextDouble();
+				recordCount++;
+				
+			}// End of while
+			infile.close();;
+		}// End of try 
+		//catch clause
+		catch (IOException ex)
+		{// Open the brace of catch
+			recordCount = NOT_FOUND;
+		}// End of catch
+		
+	}// End of the method
+
+	// Set method
+	public void setSearchIndex (int borrowedID)
+	{// Open the brace of method
+		itemSearchIndex = getSearchResults(borrowedID);
+	}// End of method
+
+	// Set method
+	public void setBubbleSort()
+	{// Open the brace of the method
+		//Local variables
+		int last = 0;
+		int index = 0;
+		boolean swap;
+
+		last = recordCount - 1;
+		while(last > RESET_VALUE)
+		{// Open the brace of while for last > RESET_VALUE
+			index = RESET_VALUE;
+			swap = false;
+
+			while (index < last)
+			{// Open the brace of while for index < last
+				if(itemIDs[index] > itemIDs[index + 1])
+				{// Open the brace o if for itemIDs[index] > itemIDs[index + 1]
+					setSwapArrayElements(index);
+					swap = true;
+				}// End of if for itemIDs[index] > itemIDs[index + 1]
+				index++;
+			}// End of while for index < last
+			if(swap == false)
+			{// Open the brace of if for swap == false
+				last = RESET_VALUE;
+			}// End of if for swap == false
+			else 
+			{// Open the brace of else 
+				last = last - 1;
+			}// End of else
+		}// End of while for last > RESET_VALUE
+	}// End of the method
+
+	// Set method
+	public void setSwapArrayElements(int borrowedIndex)
+	{// Open the method
+		int localItemIDs = itemIDs[borrowedIndex];
+		String localItemNames = itemNames[borrowedIndex];
+		double localItemPrices = itemPrices[borrowedIndex];
+		int localInStockCounts = inStockCounts[borrowedIndex];
+		int localQuantity = orderQuantity[borrowedIndex];
+		double localCost = orderTotal[borrowedIndex];
+		itemIDs[borrowedIndex] = itemIDs[borrowedIndex + 1];
+		itemIDs[borrowedIndex + 1] = localItemIDs;
+		itemNames[borrowedIndex] = itemNames[borrowedIndex+1];
+		itemNames[borrowedIndex + 1] = localItemNames;
+		itemPrices[borrowedIndex] = itemPrices[borrowedIndex+1];
+		itemPrices[borrowedIndex + 1] = localItemPrices;
+		inStockCounts[borrowedIndex] = inStockCounts[borrowedIndex+1];
+		inStockCounts[borrowedIndex + 1] = localInStockCounts;
+		orderQuantity[borrowedIndex] = orderQuantity[borrowedIndex + 1];
+		orderQuantity[borrowedIndex + 1] = localQuantity;
+		orderTotal[borrowedIndex] = orderTotal[borrowedIndex + 1];
+		orderTotal[borrowedIndex + 1] = localCost;
+	}// End of the method
+
+	// Get method
+	public int[] getInStockCounts()
+	{// Open the brace of the method
+		return inStockCounts;
+	}// close method
+
+	// Get method
+	public int[] getItemIDs()
+	{// Open the brace of the method
+		return itemIDs;
+	}// close method
+
+	// Get method
+	public String[] getItemNames()
+	{// Open the brace of the method
+		return itemNames;
+	}// close method
+
+	// Get method
+	public double[] getItemPrices()
+	{// Open the brace of the method
+		return itemPrices;
+	}// close method
+
+	// Get method
+	public String[] getDiscountNames()
+	{// Open the brace of the method
+		return DISCOUNT_NAMES;
+	}
+
+	// Get method
+	public double[] getDiscountRates()
+	{// Open the brace of the method
+		return DISCOUNT_RATES;
+	}// close method
+
+	// Get method
+	public int[] getOrderQuantities()
+	{// Open the brace of the method
+		return orderQuantity;
+	}// close method
+
+	// Get method
+	public double[] getOrderTotals()
+	{// Open the brace of the method
+		return orderTotal;
+	}// close method
+
+	// Get method
+	public String[] getPrizeNames()
+	{// Open the brace of the method
+		return PRIZE_NAMES;
+	}// close method
+
+	// Get method
+	public int getRandomNumber()
+	{// Open the brace of the method
+		return prizeGenerator.nextInt(PRIZE_NAMES.length);
+	}// close method
+
+	// Get method
+	public int getMaxRecords()
+	{// Open the brace of the method
+		return MAX_RECORDS;
+	}// close method
+
+	// Get method
+	public int getItemSearchIndex()
+	{// Open the brace of the method
+		return itemSearchIndex;
+	}// close method
+
+	// Get method
+	public int getRecordCount()
+	{// Open the brace of the method
+		return recordCount;
+	}// close method
+
+	// Get method
+	public double getGrandTotal()
+	{// Open the method	
+		double grandTotal = 0;
+		int localIndex = 0;
+		while (localIndex < orderTotal.length)
+		{// Open wile
+			grandTotal = orderTotal[localIndex] + grandTotal;
+			localIndex++;
+		}// End of While
+
+		return grandTotal;
+	}// close method
+
+	// Get method
+	public int getSearchResults(int borrowedBorrowedID)
+	{// open method
+		int localFirst = 0;
+		int localLast = 0;
+		int localMid = 0;
+		int ONE = 1;
+		int TWO = 2;
+		boolean found;
+		
+		localLast = recordCount - ONE; 
+		found = false;
+		
+		while(localFirst <= localLast && found == false)
+		{// Open while
+			localMid = (localFirst + localLast)/TWO;
+			if (itemIDs[localMid] == borrowedBorrowedID)
+			{// Open if
+				found = true;
+			}//close if
+			else	
+			{//pen else
+				if(itemIDs[localMid] < borrowedBorrowedID)
+				{// open if
+					localFirst = localMid + ONE;
+				}// close if
+				else 
+				{// open else
+					localLast = localMid - ONE;
+				}// close else
+			}// close else
+		}// close while
+		if(found == false)
+		{// open if
+			localMid = NOT_FOUND;
+			
+		}// close if
+		
+			return localMid;
+		
+	}// close method
+
+
+
+}// End of Inventory class
