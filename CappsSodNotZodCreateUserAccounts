@@ -1,0 +1,146 @@
+//AUTHOR: Yana Capps
+//COURSE: CPT 187
+//PURPOSE: To manage user login information
+//STARTDATE: 07/15/2020
+
+
+package capps.cpt187.program6;
+
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
+
+public class UserAccounts 
+
+{// Open the brace of the OrderWriter class
+
+	// Declare and initialize variables
+	private int NOT_FOUND = -1;
+	private int RESET_VALUE = 0;
+	private int MAXIMUM_RECORDS = 50;
+
+	// Declare and initialize variables
+	private String[] userNames = new String[MAXIMUM_RECORDS];
+	private String[] passwords = new String[MAXIMUM_RECORDS];
+	private boolean fileFoundFlag = false;
+	private String masterFileName = "";
+	private int recordCount = 0;
+	private int searchedIndex = 0;
+
+	//Class Constructor
+	public UserAccounts(String borrowedFileName)
+	{// Open the brace of constructor
+		masterFileName = borrowedFileName;
+	}// End of constructor
+
+	// Set method
+	public void setUserAccountArrays()
+	{// Open the brace of the method
+		recordCount = RESET_VALUE;
+		try
+		{// Open the brace of try
+			Scanner infile = new Scanner(new FileInputStream(masterFileName));
+			while (recordCount < MAXIMUM_RECORDS && infile.hasNext() == true)
+			{// Open the brace of wile
+				userNames[recordCount] = infile.next();
+				passwords[recordCount] = infile.next();
+				recordCount++;
+			}// end of while
+			fileFoundFlag = true;
+			infile.close();
+		}// end of try
+		catch (IOException ex)
+		{// Open the brace of catch
+			fileFoundFlag = false;
+		}// end of catch
+	}// end of the method
+
+	// Set method
+	public void setSearchedIndex(String borrowedUserName)
+	{// Open the brace of the method
+		searchedIndex = getSeqSearch(borrowedUserName);
+	}// end of the method
+
+	// Set method
+	public void setSearchedIndex(String borrowedUserName, String borrowedPassword)
+	{// Open the brace of the method
+		searchedIndex = getSeqSearch(borrowedUserName);
+		if (searchedIndex >= RESET_VALUE && getPasswordMatch(borrowedPassword) == false)
+		{// Open the brace of if
+			searchedIndex = NOT_FOUND;
+		}// end of if
+	}// end of the method
+
+	// Set method
+	public void setWriteOneRecord(String borrowedUserName, String borrowedPassword)
+	{// open the brace of the method
+		recordCount = RESET_VALUE;
+		try
+		{// Open the brace of try 
+			PrintWriter filePW = new PrintWriter(new FileWriter(masterFileName, true));
+			filePW.printf("%n%-10s\t%5s%n", borrowedUserName, borrowedPassword);
+			fileFoundFlag = true;
+			recordCount++;
+			filePW.close();
+		}// end of try 
+		catch (IOException ex)
+		{// Open the brace of catch
+			fileFoundFlag = false;
+		}// end of catch
+	}// end of method
+
+	// Get method
+	public int getSeqSearch(String borrowedUserName)
+	{// open the brace of the method
+		int localIndex = 0;
+		int found = 0;
+		found = NOT_FOUND;
+		while (localIndex < recordCount)
+		{// Open the brace of while
+			if (borrowedUserName.equalsIgnoreCase(userNames[localIndex]) == true)
+			{// Open the brace of if
+				found = localIndex;
+				localIndex = recordCount;
+			}// end of if
+			else
+			{// Open the brace of else
+				localIndex++;
+			}// end of else
+		}// end of while
+		return found;
+	}// end of method
+
+	// Get method
+	public boolean getPasswordMatch(String borrowedBorrowedPassword)
+	{// open the brace of the method
+		return borrowedBorrowedPassword.equals(passwords[searchedIndex]);
+	}//END of getPasswordMatch()
+
+	// Get method
+	public String getFileName()
+	{// open the brace of the method
+		return masterFileName;
+	}// end of method
+
+	//Get method
+	public int getRecordCount()
+	{// open the brace of the method
+		return recordCount;
+	}// end of method
+
+	//Get method
+	public int getSearchedIndex()
+	{// open the brace of the method
+		return searchedIndex;
+	}// end of method
+
+	//Get method
+	public boolean getFileFoundFlag()
+	{// open the brace of the method
+		return fileFoundFlag;
+	}// end of method
+
+
+}//End of userAccounts class
